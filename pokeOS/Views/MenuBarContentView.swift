@@ -43,22 +43,28 @@ struct MenuBarContentView: View {
 
             Divider()
 
-            Toggle("Shiny", isOn: $settings.isShiny)
-
-            Toggle("Show Pokemon", isOn: $settings.isVisible)
+            HStack {
+                Toggle("Shiny", isOn: $settings.isShiny)
+                Spacer()
+                Toggle("Show Pokemon", isOn: $settings.isVisible)
+            }
 
             Divider()
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Overlay Width: \(Int(settings.rectWidth))")
-                    .font(.caption)
-                Stepper("", value: $settings.rectWidth, in: 200...2000, step: 50)
-                    .labelsHidden()
-
-                Text("Overlay Height: \(Int(settings.rectHeight))")
-                    .font(.caption)
-                Stepper("", value: $settings.rectHeight, in: 200...2000, step: 50)
-                    .labelsHidden()
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Overlay Width: \(Int(settings.rectWidth))")
+                        .font(.caption)
+                    Stepper("", value: $settings.rectWidth, in: 200...2000, step: 50)
+                        .labelsHidden()
+                }
+                Spacer()
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Overlay Height: \(Int(settings.rectHeight))")
+                        .font(.caption)
+                    Stepper("", value: $settings.rectHeight, in: 200...2000, step: 50)
+                        .labelsHidden()
+                }
             }
 
             VStack(alignment: .leading, spacing: 6) {
