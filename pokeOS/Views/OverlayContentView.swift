@@ -3,7 +3,7 @@ import AppKit
 class OverlayContentView: NSView {
     let spriteView = SpriteImageView()
     private let highlightView = NSView()
-    var isOptionHeld = false
+    var isModifierHeld = false
 
     private enum ResizeEdge {
         case none
@@ -60,7 +60,7 @@ class OverlayContentView: NSView {
         if spriteView.frame.contains(localPoint) {
             return spriteView
         }
-        if isOptionHeld && edgeAt(localPoint) != .none {
+        if isModifierHeld && edgeAt(localPoint) != .none {
             return self
         }
         return nil
@@ -99,7 +99,7 @@ class OverlayContentView: NSView {
     // MARK: - Mouse events
 
     override func mouseMoved(with event: NSEvent) {
-        guard isOptionHeld else {
+        guard isModifierHeld else {
             NSCursor.arrow.set()
             super.mouseMoved(with: event)
             return
@@ -114,7 +114,7 @@ class OverlayContentView: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        guard isOptionHeld else {
+        guard isModifierHeld else {
             super.mouseDown(with: event)
             return
         }
@@ -199,7 +199,7 @@ class OverlayContentView: NSView {
     // MARK: - Public
 
     func setHighlightVisible(_ visible: Bool) {
-        isOptionHeld = visible
+        isModifierHeld = visible
         highlightView.isHidden = !visible
         if !visible {
             NSCursor.arrow.set()

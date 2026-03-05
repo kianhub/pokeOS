@@ -15,7 +15,7 @@ A native macOS menu bar app that puts an animated Pokemon sprite on your desktop
 - **Physics-based movement** — walking, idling, wall bouncing, smooth acceleration, and vertical bobbing
 - **Transparent overlay** — always-on-top window with click-through support (clicks pass through to apps below)
 - **Menu bar UI** — searchable Pokemon list, shiny toggle, size/scale sliders, visibility toggle
-- **Option+Drag** to reposition the overlay anywhere on screen
+- **Shift+Ctrl+Drag** to reposition the overlay anywhere on screen
 - **Launch at Login** support
 - **URL scheme** (`pokeos://`) for scripting and automation
 - **Raycast extension** for quick control without touching the menu bar
@@ -82,7 +82,7 @@ Click the pokeOS menu bar icon to access:
 
 ### Repositioning
 
-Hold **Option** and **drag** the overlay window to move it anywhere on screen. The position is saved automatically.
+Hold **Shift+Ctrl** and **drag** the overlay window to move it anywhere on screen. The position is saved automatically.
 
 ### URL Scheme
 

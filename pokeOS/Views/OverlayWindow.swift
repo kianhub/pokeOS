@@ -42,7 +42,7 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
         )
         animationEngine.start()
         observeSettings()
-        startOptionKeyMonitor()
+        startModifierKeyMonitor()
     }
 
     private func observeSettings() {
@@ -126,15 +126,15 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
         animationEngine.stop()
     }
 
-    private func startOptionKeyMonitor() {
+    private func startModifierKeyMonitor() {
         localFlagsMonitor = NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
-            let optionHeld = event.modifierFlags.contains(.option)
-            self?.overlayContentView.setHighlightVisible(optionHeld)
+            let modifierHeld = event.modifierFlags.isSuperset(of: [.shift, .control])
+            self?.overlayContentView.setHighlightVisible(modifierHeld)
             return event
         }
         globalFlagsMonitor = NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
-            let optionHeld = event.modifierFlags.contains(.option)
-            self?.overlayContentView.setHighlightVisible(optionHeld)
+            let modifierHeld = event.modifierFlags.isSuperset(of: [.shift, .control])
+            self?.overlayContentView.setHighlightVisible(modifierHeld)
         }
     }
 

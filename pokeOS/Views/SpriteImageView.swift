@@ -23,7 +23,7 @@ class SpriteImageView: NSImageView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        if event.modifierFlags.contains(.option) {
+        if event.modifierFlags.isSuperset(of: [.shift, .control]) {
             window?.performDrag(with: event)
             if let windowFrame = window?.frame {
                 AppSettings.shared.rectX = windowFrame.origin.x
