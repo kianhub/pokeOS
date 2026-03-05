@@ -22,6 +22,7 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
         backgroundColor = .clear
         isOpaque = false
         hasShadow = false
+        acceptsMouseMovedEvents = true
         collectionBehavior = [.canJoinAllSpaces, .stationary]
         isReleasedWhenClosed = false
         contentView = overlayContentView
@@ -139,7 +140,10 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
     func animationEngineDidUpdatePosition(_ position: CGPoint, facingLeft: Bool) {
         overlayContentView.updateSpritePosition(NSPoint(x: position.x, y: position.y))
         if facingLeft {
-            overlayContentView.spriteView.layer?.setAffineTransform(CGAffineTransform(scaleX: -1, y: 1))
+            let w = overlayContentView.spriteView.frame.width
+            overlayContentView.spriteView.layer?.setAffineTransform(
+                CGAffineTransform(translationX: w, y: 0).scaledBy(x: -1, y: 1)
+            )
         } else {
             overlayContentView.spriteView.layer?.setAffineTransform(.identity)
         }
