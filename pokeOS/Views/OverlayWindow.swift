@@ -1,17 +1,72 @@
 import AppKit
 import Combine
 
-class OverlayWindow: NSWindow, AnimationEngineDelegate {
+class PokemonSprite: AnimationEngineDelegate {
     let pokemon: SelectedPokemon
+    let spriteView: SpriteImageView
+    let animationEngine = AnimationEngine()
+    private let settings = AppSettings.shared
+
+    init(pokemon: SelectedPokemon, spriteView: SpriteImageView) {
+        self.pokemon = pokemon
+        self.spriteView = spriteView
+        animationEngine.delegate = self
+    }
+
+    func applyScale() {
+        let size = 48.0 * settings.spriteScale
+        spriteView.setFrameSize(NSSize(width: size, height: size))
+    }
+
+    func loadSprite() {
+        if let image = SpriteLoader.loadSprite(
+            name: pokemon.name,
+            gen: pokemon.gen,
+            isShiny: settings.isShiny,
+            isWalking: animationEngine.isWalking
+        ) {
+            spriteView.updateSprite(image: image)
+        }
+    }
+
+    func randomizePosition(in contentRect: NSRect) {
+        let size = 48.0 * settings.spriteScale
+        let maxX = max(0, contentRect.width - size)
+        let maxY = max(0, contentRect.height - size)
+        animationEngine.position = CGPoint(
+            x: Double.random(in: 0...maxX),
+            y: Double.random(in: 0...maxY)
+        )
+    }
+
+    // MARK: - AnimationEngineDelegate
+
+    func animationEngineDidUpdatePosition(_ position: CGPoint, facingLeft: Bool) {
+        spriteView.frame.origin = NSPoint(x: position.x, y: position.y)
+        if facingLeft {
+            let w = spriteView.frame.width
+            spriteView.layer?.setAffineTransform(
+                CGAffineTransform(translationX: w, y: 0).scaledBy(x: -1, y: 1)
+            )
+        } else {
+            spriteView.layer?.setAffineTransform(.identity)
+        }
+    }
+
+    func animationEngineDidChangeState(isWalking: Bool) {
+        loadSprite()
+    }
+}
+
+class OverlayWindow: NSWindow {
     private let overlayContentView: OverlayContentView
-    private let animationEngine = AnimationEngine()
+    private(set) var sprites: [String: PokemonSprite] = [:]
     private let settings = AppSettings.shared
     private var cancellables = Set<AnyCancellable>()
     private var localFlagsMonitor: Any?
     private var globalFlagsMonitor: Any?
 
-    init(contentRect: NSRect, pokemon: SelectedPokemon) {
-        self.pokemon = pokemon
+    init(contentRect: NSRect) {
         overlayContentView = OverlayContentView(frame: contentRect)
 
         super.init(
@@ -29,33 +84,55 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
         isReleasedWhenClosed = false
         contentView = overlayContentView
 
-        animationEngine.delegate = self
-        applySpriteScale()
-        loadSprite()
-        updateEngineBounds()
-        // Randomize starting position within bounds
-        let maxX = max(0, contentRect.width - 48.0 * settings.spriteScale)
-        let maxY = max(0, contentRect.height - 48.0 * settings.spriteScale)
-        animationEngine.position = CGPoint(
-            x: Double.random(in: 0...maxX),
-            y: Double.random(in: 0...maxY)
-        )
-        animationEngine.start()
         observeSettings()
         startModifierKeyMonitor()
     }
 
+    // MARK: - Sprite management
+
+    func addPokemon(_ pokemon: SelectedPokemon) {
+        guard sprites[pokemon.name] == nil else { return }
+        let spriteView = overlayContentView.addSpriteView()
+        let sprite = PokemonSprite(pokemon: pokemon, spriteView: spriteView)
+        sprites[pokemon.name] = sprite
+        sprite.applyScale()
+        sprite.loadSprite()
+        sprite.randomizePosition(in: frame)
+        updateEngineBounds(for: sprite)
+        sprite.animationEngine.start()
+    }
+
+    func removePokemon(named name: String) {
+        guard let sprite = sprites.removeValue(forKey: name) else { return }
+        sprite.animationEngine.stop()
+        overlayContentView.removeSpriteView(sprite.spriteView)
+    }
+
+    func removeAllPokemon() {
+        for (_, sprite) in sprites {
+            sprite.animationEngine.stop()
+        }
+        sprites.removeAll()
+        overlayContentView.removeAllSpriteViews()
+    }
+
+    func stopAllAnimations() {
+        for (_, sprite) in sprites {
+            sprite.animationEngine.stop()
+        }
+    }
+
+    // MARK: - Settings observation
+
     private func observeSettings() {
-        // Shiny changed: reload sprite
         settings.$isShiny
             .dropFirst()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                self?.loadSprite()
+                self?.sprites.values.forEach { $0.loadSprite() }
             }
             .store(in: &cancellables)
 
-        // Rect dimensions changed: resize and reposition window
         settings.$rectWidth
             .combineLatest(settings.$rectHeight, settings.$rectX, settings.$rectY)
             .dropFirst()
@@ -65,11 +142,10 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
                 let newFrame = NSRect(x: x, y: y, width: width, height: height)
                 self.setFrame(newFrame, display: true)
                 self.overlayContentView.frame = NSRect(origin: .zero, size: newFrame.size)
-                self.updateEngineBounds()
+                self.sprites.values.forEach { self.updateEngineBounds(for: $0) }
             }
             .store(in: &cancellables)
 
-        // Visibility changed
         settings.$isVisible
             .dropFirst()
             .receive(on: RunLoop.main)
@@ -82,36 +158,21 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
             }
             .store(in: &cancellables)
 
-        // Sprite scale changed
         settings.$spriteScale
             .dropFirst()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                self?.applySpriteScale()
-                self?.updateEngineBounds()
+                guard let self else { return }
+                self.sprites.values.forEach {
+                    $0.applyScale()
+                    self.updateEngineBounds(for: $0)
+                }
             }
             .store(in: &cancellables)
     }
 
-    private func applySpriteScale() {
-        let size = 48.0 * settings.spriteScale
-        overlayContentView.spriteView.setFrameSize(NSSize(width: size, height: size))
-    }
-
-    private func loadSprite() {
-        let isWalking = animationEngine.isWalking
-        if let image = SpriteLoader.loadSprite(
-            name: pokemon.name,
-            gen: pokemon.gen,
-            isShiny: settings.isShiny,
-            isWalking: isWalking
-        ) {
-            overlayContentView.updateSpriteImage(image)
-        }
-    }
-
-    private func updateEngineBounds() {
-        let spriteSize = overlayContentView.spriteView.frame.size
+    private func updateEngineBounds(for sprite: PokemonSprite) {
+        let spriteSize = sprite.spriteView.frame.size
         let contentRect = self.contentRect(forFrameRect: frame)
         let insetRect = CGRect(
             x: 0,
@@ -119,11 +180,7 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
             width: contentRect.width - spriteSize.width,
             height: contentRect.height - spriteSize.height
         )
-        animationEngine.updateBounds(insetRect)
-    }
-
-    func stopAnimation() {
-        animationEngine.stop()
+        sprite.animationEngine.updateBounds(insetRect)
     }
 
     private func startModifierKeyMonitor() {
@@ -145,23 +202,5 @@ class OverlayWindow: NSWindow, AnimationEngineDelegate {
         if let monitor = globalFlagsMonitor {
             NSEvent.removeMonitor(monitor)
         }
-    }
-
-    // MARK: - AnimationEngineDelegate
-
-    func animationEngineDidUpdatePosition(_ position: CGPoint, facingLeft: Bool) {
-        overlayContentView.updateSpritePosition(NSPoint(x: position.x, y: position.y))
-        if facingLeft {
-            let w = overlayContentView.spriteView.frame.width
-            overlayContentView.spriteView.layer?.setAffineTransform(
-                CGAffineTransform(translationX: w, y: 0).scaledBy(x: -1, y: 1)
-            )
-        } else {
-            overlayContentView.spriteView.layer?.setAffineTransform(.identity)
-        }
-    }
-
-    func animationEngineDidChangeState(isWalking: Bool) {
-        loadSprite()
     }
 }

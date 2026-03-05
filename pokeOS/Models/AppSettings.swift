@@ -50,6 +50,10 @@ class AppSettings: ObservableObject {
         }
     }
 
+    @Published var separateWindows: Bool {
+        didSet { UserDefaults.standard.set(separateWindows, forKey: "separateWindows") }
+    }
+
     static let maxPokemon = 10
 
     private init() {
@@ -63,7 +67,8 @@ class AppSettings: ObservableObject {
             "rectY": 100.0,
             "isVisible": true,
             "spriteScale": 2.0,
-            "launchAtLogin": false
+            "launchAtLogin": false,
+            "separateWindows": false
         ])
 
         // Migrate from single selectedPokemon to list
@@ -86,6 +91,7 @@ class AppSettings: ObservableObject {
         self.isVisible = defaults.object(forKey: "isVisible") == nil ? true : defaults.bool(forKey: "isVisible")
         self.spriteScale = defaults.double(forKey: "spriteScale") == 0 ? 2.0 : defaults.double(forKey: "spriteScale")
         self.launchAtLogin = defaults.bool(forKey: "launchAtLogin")
+        self.separateWindows = defaults.bool(forKey: "separateWindows")
     }
 
     private func persistPokemonList() {

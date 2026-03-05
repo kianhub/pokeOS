@@ -1,7 +1,7 @@
 import AppKit
 
 class OverlayContentView: NSView {
-    let spriteView = SpriteImageView()
+    private(set) var spriteViews: [SpriteImageView] = []
     private let highlightView = NSView()
     var isModifierHeld = false
 
@@ -19,14 +19,12 @@ class OverlayContentView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         setupHighlightView()
-        addSubview(spriteView)
         setupTrackingArea()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupHighlightView()
-        addSubview(spriteView)
         setupTrackingArea()
     }
 
@@ -57,13 +55,36 @@ class OverlayContentView: NSView {
 
     override func hitTest(_ point: NSPoint) -> NSView? {
         let localPoint = convert(point, from: superview)
-        if spriteView.frame.contains(localPoint) {
-            return spriteView
+        for spriteView in spriteViews {
+            if spriteView.frame.contains(localPoint) {
+                return spriteView
+            }
         }
         if isModifierHeld && edgeAt(localPoint) != .none {
             return self
         }
         return nil
+    }
+
+    // MARK: - Sprite management
+
+    func addSpriteView() -> SpriteImageView {
+        let spriteView = SpriteImageView()
+        spriteViews.append(spriteView)
+        addSubview(spriteView)
+        return spriteView
+    }
+
+    func removeSpriteView(_ spriteView: SpriteImageView) {
+        spriteView.removeFromSuperview()
+        spriteViews.removeAll { $0 === spriteView }
+    }
+
+    func removeAllSpriteViews() {
+        for sv in spriteViews {
+            sv.removeFromSuperview()
+        }
+        spriteViews.removeAll()
     }
 
     // MARK: - Edge detection
@@ -204,13 +225,5 @@ class OverlayContentView: NSView {
         if !visible {
             NSCursor.arrow.set()
         }
-    }
-
-    func updateSpritePosition(_ point: NSPoint) {
-        spriteView.frame.origin = point
-    }
-
-    func updateSpriteImage(_ image: NSImage) {
-        spriteView.updateSprite(image: image)
     }
 }

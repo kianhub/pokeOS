@@ -2,8 +2,11 @@ import AppKit
 import Combine
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    private var overlayWindows: [String: OverlayWindow] = [:]
-    private var cancellable: AnyCancellable?
+    // Shared mode: single window with all Pokemon
+    private var sharedWindow: OverlayWindow?
+    // Separate mode: one window per Pokemon
+    private var separateWindows: [String: OverlayWindow] = [:]
+    private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSAppleEventManager.shared().setEventHandler(
@@ -14,45 +17,97 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
 
         let settings = AppSettings.shared
-        syncWindows(with: settings.selectedPokemonList)
+        rebuildWindows()
 
-        cancellable = settings.$selectedPokemonList
+        settings.$selectedPokemonList
             .dropFirst()
             .receive(on: RunLoop.main)
-            .sink { [weak self] list in
-                self?.syncWindows(with: list)
-            }
+            .sink { [weak self] _ in self?.syncPokemon() }
+            .store(in: &cancellables)
+
+        settings.$separateWindows
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in self?.rebuildWindows() }
+            .store(in: &cancellables)
     }
 
-    private func syncWindows(with list: [SelectedPokemon]) {
+    private func makeFrame() -> NSRect {
+        let s = AppSettings.shared
+        return NSRect(x: s.rectX, y: s.rectY, width: s.rectWidth, height: s.rectHeight)
+    }
+
+    // MARK: - Rebuild (mode switch)
+
+    private func rebuildWindows() {
+        tearDownAll()
         let settings = AppSettings.shared
-        let frame = NSRect(
-            x: settings.rectX,
-            y: settings.rectY,
-            width: settings.rectWidth,
-            height: settings.rectHeight
-        )
 
-        let currentNames = Set(overlayWindows.keys)
-        let newNames = Set(list.map(\.name))
-
-        // Remove windows for deselected Pokemon
-        for name in currentNames.subtracting(newNames) {
-            if let window = overlayWindows.removeValue(forKey: name) {
-                window.stopAnimation()
-                window.orderOut(nil)
+        if settings.separateWindows {
+            for pokemon in settings.selectedPokemonList {
+                let window = OverlayWindow(contentRect: makeFrame())
+                window.addPokemon(pokemon)
+                separateWindows[pokemon.name] = window
+                if settings.isVisible { window.makeKeyAndOrderFront(nil) }
             }
+        } else {
+            let window = OverlayWindow(contentRect: makeFrame())
+            sharedWindow = window
+            for pokemon in settings.selectedPokemonList {
+                window.addPokemon(pokemon)
+            }
+            if settings.isVisible { window.makeKeyAndOrderFront(nil) }
         }
+    }
 
-        // Add windows for newly selected Pokemon
-        for pokemon in list where !currentNames.contains(pokemon.name) {
-            let window = OverlayWindow(contentRect: frame, pokemon: pokemon)
-            overlayWindows[pokemon.name] = window
-            if settings.isVisible {
-                window.makeKeyAndOrderFront(nil)
+    // MARK: - Sync (add/remove Pokemon without rebuilding)
+
+    private func syncPokemon() {
+        let settings = AppSettings.shared
+        let list = settings.selectedPokemonList
+
+        if settings.separateWindows {
+            let currentNames = Set(separateWindows.keys)
+            let newNames = Set(list.map(\.name))
+
+            for name in currentNames.subtracting(newNames) {
+                if let window = separateWindows.removeValue(forKey: name) {
+                    window.stopAllAnimations()
+                    window.orderOut(nil)
+                }
+            }
+            for pokemon in list where !currentNames.contains(pokemon.name) {
+                let window = OverlayWindow(contentRect: makeFrame())
+                window.addPokemon(pokemon)
+                separateWindows[pokemon.name] = window
+                if settings.isVisible { window.makeKeyAndOrderFront(nil) }
+            }
+        } else if let window = sharedWindow {
+            let currentNames = Set(window.sprites.keys)
+            let newNames = Set(list.map(\.name))
+
+            for name in currentNames.subtracting(newNames) {
+                window.removePokemon(named: name)
+            }
+            for pokemon in list where !currentNames.contains(pokemon.name) {
+                window.addPokemon(pokemon)
             }
         }
     }
+
+    private func tearDownAll() {
+        sharedWindow?.stopAllAnimations()
+        sharedWindow?.orderOut(nil)
+        sharedWindow = nil
+
+        for (_, window) in separateWindows {
+            window.stopAllAnimations()
+            window.orderOut(nil)
+        }
+        separateWindows.removeAll()
+    }
+
+    // MARK: - URL scheme
 
     @objc private func handleURLEvent(_ event: NSAppleEventDescriptor, withReply reply: NSAppleEventDescriptor) {
         guard let urlString = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,

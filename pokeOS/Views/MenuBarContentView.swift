@@ -53,6 +53,8 @@ struct MenuBarContentView: View {
                 Toggle("Show Pokemon", isOn: $settings.isVisible)
             }
 
+            Toggle("Separate Windows", isOn: $settings.separateWindows)
+
             Divider()
 
             HStack(alignment: .top, spacing: 12) {
