@@ -19,6 +19,7 @@
 		A1000000000000000000000C /* MenuBarContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* MenuBarContentView.swift */; };
 		A10000000000000000000004 /* Sprites in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* Sprites */; };
 		A10000000000000000000005 /* pokemon.json in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* pokemon.json */; };
+		A1000000000000000000000D /* deskpals-icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* deskpals-icon.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		A2000000000000000000000B /* AnimationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationEngine.swift; sourceTree = "<group>"; };
 		A2000000000000000000000C /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		A2000000000000000000000D /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000E /* deskpals-icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "deskpals-icon.icon"; path = "assets/deskpals-icon.icon"; sourceTree = SOURCE_ROOT; };
 		A20000000000000000000010 /* deskpals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = deskpals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -54,6 +56,7 @@
 			children = (
 				A40000000000000000000002 /* deskpals */,
 				A40000000000000000000007 /* Products */,
+				A2000000000000000000000E /* deskpals-icon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -185,6 +188,7 @@
 			files = (
 				A10000000000000000000004 /* Sprites in Resources */,
 				A10000000000000000000005 /* pokemon.json in Resources */,
+				A1000000000000000000000D /* deskpals-icon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,6 +334,7 @@
 		A70000000000000000000021 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "deskpals-icon";
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -353,6 +358,7 @@
 		A70000000000000000000022 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "deskpals-icon";
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
