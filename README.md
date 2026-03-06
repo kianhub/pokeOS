@@ -2,16 +2,18 @@
 
 # deskpals
 
-![deskpals-showcase](https://github.com/user-attachments/assets/7f472b1e-4f7a-47ef-bda1-cb8f28378d3c)
+![pally](assets/deskpals-pally.png)
 
 </div>
 
 <p align="center">
 
-A native macOS menu bar app that puts animated sprite companions on your desktop. Ships with 565 Pokemon sprites and supports custom characters — add any GIF you like. Inspired by [vscode-pokemon](https://github.com/jakobhoeg/vscode-pokemon), but at the OS level — your companion follows you everywhere, not just in your editor.
+A native macOS menu bar app that puts animated sprite companions on your desktop. Ships with 565 Pokemon sprites and supports custom characters — add any GIF you like. Run up to 10 sprites at once, each in shared or separate windows. Inspired by [vscode-pokemon](https://github.com/jakobhoeg/vscode-pokemon), but at the OS level — your companions follow you everywhere, not just in your editor.
 
 </p>
 <div align="center">
+
+![deskpals-showcase](https://github.com/user-attachments/assets/7f472b1e-4f7a-47ef-bda1-cb8f28378d3c)
 
 ![macOS](https://img.shields.io/badge/macOS-13.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5-orange)
@@ -24,6 +26,8 @@ A native macOS menu bar app that puts animated sprite companions on your desktop
 ## Features
 
 - **565 Pokemon** from Generations 1–4 with animated sprites
+- **Multi-sprite support** — run up to 10 Pokemon on your desktop at once
+- **Shared or separate windows** — all sprites in one overlay, or each in its own window
 - **Shiny variants** for every Pokemon
 - **Custom sprites** — add any character as an animated GIF
 - **Physics-based movement** — walking, idling, wall bouncing, smooth acceleration, and vertical bobbing
@@ -81,7 +85,7 @@ open build/Release/deskpals.app
 1. The app appears as an icon in your **menu bar** (no Dock icon)
 2. A transparent overlay window appears with **Pikachu** walking around
 3. Click the menu bar icon to open settings
-4. Pick a different Pokemon, toggle shiny mode, resize the area, or adjust the sprite scale
+4. Pick Pokemon (up to 10 at once), toggle shiny mode, resize the area, or adjust the sprite scale
 
 ---
 
@@ -93,11 +97,13 @@ Click the deskpals menu bar icon to access:
 
 | Setting | Description |
 |---------|-------------|
-| **Pokemon Picker** | Searchable list of 565 Pokemon with generation indicators |
+| **Pokemon Picker** | Searchable list of 565 Pokemon — click to toggle on/off (up to 10 active) |
 | **Shiny Toggle** | Switch between normal and shiny sprite variants |
+| **Separate Windows** | Give each sprite its own overlay window instead of sharing one |
 | **Width / Height** | Resize the overlay area (200–2000px) |
 | **Sprite Scale** | Scale the sprite from 1x to 5x |
 | **Show / Hide** | Toggle overlay visibility |
+| **Open Sprites Folder** | Open the custom sprites directory with a reload button |
 | **Launch at Login** | Start deskpals automatically on login |
 
 ### Repositioning
@@ -109,7 +115,7 @@ Hold **Shift+Ctrl** and **drag** the overlay window to move it anywhere on scree
 Control deskpals from Terminal, scripts, or other apps using the `deskpals://` URL scheme:
 
 ```bash
-# Change Pokemon
+# Toggle a Pokemon on/off (adds if not active, removes if already active)
 open "deskpals://pokemon?name=charizard&gen=1"
 open "deskpals://pokemon?name=umbreon&gen=2&shiny=true"
 
@@ -131,9 +137,9 @@ A companion [Raycast extension](https://www.raycast.com/kian/deskpals) is availa
 
 | Command | Description | Type |
 |---------|-------------|------|
-| **Change Pokemon** | Searchable list with shiny toggle dropdown | List view |
+| **Change Sprite** | Searchable list of all 565 Pokemon with shiny toggle | List view |
 | **Toggle Visibility** | One-click show/hide | No-view (instant) |
-| **Resize Pokemon Area** | Form to set width and height | Form view |
+| **Resize Area** | Form to set overlay width and height | Form view |
 
 Install it from the [Raycast Store](https://www.raycast.com/kian/deskpals) or search "deskpals" in Raycast.
 
@@ -198,7 +204,7 @@ Click the **reload button** (circular arrow icon) next to "Open Sprites Folder" 
 
 **5. Select your character**
 
-Find your character in the Pokemon list and click it. It will start walking around your desktop!
+Find your character in the Pokemon list and click it to toggle it on. It will start walking around your desktop!
 
 ### Tips
 
@@ -234,7 +240,8 @@ deskpalsApp (@main)
         └── MenuBarContentView (SwiftUI settings UI)
 
 AppDelegate (NSApplicationDelegate)
-  ├── OverlayWindow (transparent, borderless, floating)
+  ├── Shared mode: single OverlayWindow with all sprites
+  ├── Separate mode: one OverlayWindow per sprite
   │     ├── OverlayContentView (click-through via hitTest)
   │     │     └── SpriteImageView (animated GIF)
   │     └── AnimationEngine (60fps movement & physics)
@@ -287,7 +294,7 @@ deskpals/
 ├── scripts/
 │   └── build-release.sh         # Build & package for distribution
 └── assets/
-    └── deskpals-icon.icns       # App icon
+    └── deskpals-icon.icon/      # App icon
 ```
 
 ---
@@ -298,9 +305,9 @@ All settings persist across launches via UserDefaults.
 
 | Setting | Default | Range |
 |---------|---------|-------|
-| `selectedPokemon` | `pikachu` | Any of the 565 bundled Pokemon |
-| `selectedPokemonGen` | `1` | 1–4 |
+| `selectedPokemonList` | `[pikachu (gen 1)]` | Up to 10 Pokemon (JSON-encoded) |
 | `isShiny` | `false` | — |
+| `separateWindows` | `false` | — |
 | `rectWidth` | `400` | 200–2000 px |
 | `rectHeight` | `300` | 200–2000 px |
 | `rectX` | `100` | Any screen coordinate |
