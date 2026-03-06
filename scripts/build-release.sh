@@ -2,13 +2,34 @@
 set -euo pipefail
 
 # deskpals Release Build Script
-# Builds, signs (ad-hoc), and packages deskpals.app for distribution
+# Builds, signs, notarizes, and packages deskpals.app for distribution
+#
+# Usage:
+#   ./scripts/build-release.sh <version>
+#   ./scripts/build-release.sh 1.0.0
+#
+# Environment variables (required for notarization):
+#   DEVELOPER_ID_APPLICATION  - Signing identity (e.g., "Developer ID Application: Your Name (TEAMID)")
+#   NOTARY_PROFILE            - Notarytool keychain profile name (default: "deskpals-notary")
+#
+# To store notarization credentials:
+#   xcrun notarytool store-credentials "deskpals-notary" \
+#     --apple-id "your@email.com" --team-id "TEAMID" --password "app-specific-password"
 
-VERSION="${1:-$(date +%Y%m%d)}"
+VERSION="${1:?Usage: $0 <version>}"
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="$PROJECT_DIR/build"
 APP_NAME="deskpals"
 SCHEME="deskpals"
+SIGNING_IDENTITY="${DEVELOPER_ID_APPLICATION:-}"
+NOTARY_PROFILE="${NOTARY_PROFILE:-deskpals-notary}"
+
+if [ -z "$SIGNING_IDENTITY" ]; then
+  echo "ERROR: DEVELOPER_ID_APPLICATION is not set."
+  echo "  Export it before running, e.g.:"
+  echo "  export DEVELOPER_ID_APPLICATION=\"Developer ID Application: Your Name (TEAMID)\""
+  exit 1
+fi
 
 echo "==> Building $APP_NAME v$VERSION..."
 
@@ -24,18 +45,19 @@ xcodebuild \
   -archivePath "$BUILD_DIR/$APP_NAME.xcarchive" \
   archive \
   ONLY_ACTIVE_ARCH=NO \
-  | tail -5
+  CODE_SIGN_IDENTITY="$SIGNING_IDENTITY" \
+  | tail -20
 
 echo "==> Exporting app from archive..."
 
-# Create export options plist for ad-hoc distribution
-cat > "$BUILD_DIR/ExportOptions.plist" << 'PLIST'
+# Create export options plist for Developer ID distribution
+cat > "$BUILD_DIR/ExportOptions.plist" << PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>mac-application</string>
+    <string>developer-id</string>
     <key>signingStyle</key>
     <string>automatic</string>
 </dict>
@@ -47,46 +69,49 @@ xcodebuild \
   -exportArchive \
   -archivePath "$BUILD_DIR/$APP_NAME.xcarchive" \
   -exportPath "$BUILD_DIR/export" \
-  -exportOptionsPlist "$BUILD_DIR/ExportOptions.plist" \
-  2>/dev/null || true
+  -exportOptionsPlist "$BUILD_DIR/ExportOptions.plist"
 
-# If export fails (no signing identity), extract directly from archive
-if [ ! -d "$BUILD_DIR/export/$APP_NAME.app" ]; then
-  echo "==> Direct export failed, extracting from archive..."
-  cp -R "$BUILD_DIR/$APP_NAME.xcarchive/Products/Applications/$APP_NAME.app" "$BUILD_DIR/"
-else
-  cp -R "$BUILD_DIR/export/$APP_NAME.app" "$BUILD_DIR/"
-fi
+cp -R "$BUILD_DIR/export/$APP_NAME.app" "$BUILD_DIR/"
 
-echo "==> Ad-hoc signing..."
-codesign --force --deep --sign - "$BUILD_DIR/$APP_NAME.app"
-
-echo "==> Creating ZIP archive..."
-cd "$BUILD_DIR"
-ditto -c -k --keepParent "$APP_NAME.app" "$APP_NAME-$VERSION.zip"
+echo "==> Verifying code signature..."
+codesign --verify --deep --strict "$BUILD_DIR/$APP_NAME.app"
+codesign -dv --verbose=2 "$BUILD_DIR/$APP_NAME.app"
 
 echo "==> Creating DMG..."
 if command -v create-dmg &> /dev/null; then
   create-dmg \
-    --volname "$APP_NAME" \
+    --volname "$APP_NAME $VERSION" \
+    --volicon "$BUILD_DIR/$APP_NAME.app/Contents/Resources/AppIcon.icns" \
     --window-pos 200 120 \
     --window-size 600 400 \
     --icon-size 100 \
     --icon "$APP_NAME.app" 150 190 \
     --app-drop-link 450 190 \
-    "$APP_NAME-$VERSION.dmg" \
-    "$APP_NAME.app" \
-    2>/dev/null || echo "  (DMG creation failed — install create-dmg via 'brew install create-dmg' for DMG support)"
+    --no-internet-enable \
+    "$BUILD_DIR/$APP_NAME-$VERSION.dmg" \
+    "$BUILD_DIR/$APP_NAME.app"
 else
-  echo "  Skipping DMG (install create-dmg via 'brew install create-dmg')"
+  echo "  create-dmg not found, creating DMG with hdiutil..."
+  hdiutil create -volname "$APP_NAME $VERSION" \
+    -srcfolder "$BUILD_DIR/$APP_NAME.app" \
+    -ov -format UDZO \
+    "$BUILD_DIR/$APP_NAME-$VERSION.dmg"
 fi
+
+echo "==> Notarizing DMG..."
+xcrun notarytool submit "$BUILD_DIR/$APP_NAME-$VERSION.dmg" \
+  --keychain-profile "$NOTARY_PROFILE" \
+  --wait
+
+echo "==> Stapling notarization ticket..."
+xcrun stapler staple "$BUILD_DIR/$APP_NAME-$VERSION.dmg"
+
+echo "==> Verifying notarization..."
+spctl --assess --type open --context context:primary-signature "$BUILD_DIR/$APP_NAME-$VERSION.dmg"
 
 echo ""
 echo "==> Build complete!"
-echo "    App:  $BUILD_DIR/$APP_NAME.app"
-echo "    ZIP:  $BUILD_DIR/$APP_NAME-$VERSION.zip"
-[ -f "$BUILD_DIR/$APP_NAME-$VERSION.dmg" ] && echo "    DMG:  $BUILD_DIR/$APP_NAME-$VERSION.dmg"
+echo "    DMG: $BUILD_DIR/$APP_NAME-$VERSION.dmg"
 echo ""
-echo "Note: This build is ad-hoc signed. Users will need to right-click -> Open"
-echo "on first launch to bypass Gatekeeper. For notarized builds, use an Apple"
-echo "Developer ID certificate and run 'xcrun notarytool submit'."
+echo "This build is signed with Developer ID and notarized."
+echo "Users can open it without Gatekeeper warnings."
