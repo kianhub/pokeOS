@@ -20,6 +20,7 @@
 		A10000000000000000000004 /* Sprites in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* Sprites */; };
 		A10000000000000000000005 /* pokemon.json in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* pokemon.json */; };
 		A1000000000000000000000D /* deskpals-icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* deskpals-icon.icon */; };
+		A1000000000000000000000E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		A2000000000000000000000C /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		A2000000000000000000000D /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
 		A2000000000000000000000E /* deskpals-icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "deskpals-icon.icon"; path = "assets/deskpals-icon.icon"; sourceTree = SOURCE_ROOT; };
+		A2000000000000000000000F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A20000000000000000000010 /* deskpals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = deskpals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -124,6 +126,7 @@
 				A20000000000000000000004 /* Info.plist */,
 				A20000000000000000000005 /* Sprites */,
 				A20000000000000000000006 /* pokemon.json */,
+				A2000000000000000000000F /* Assets.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -189,6 +192,7 @@
 				A10000000000000000000004 /* Sprites in Resources */,
 				A10000000000000000000005 /* pokemon.json in Resources */,
 				A1000000000000000000000D /* deskpals-icon.icon in Resources */,
+				A1000000000000000000000E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,7 +8,13 @@ struct deskpalsApp: App {
         MenuBarExtra {
             MenuBarContentView(settings: AppSettings.shared)
         } label: {
-            Image(systemName: "circle.fill")
+            if let nsImage = NSImage(named: "MenuBarIcon") {
+                let _ = {
+                    nsImage.size = NSSize(width: 18, height: 18)
+                    nsImage.isTemplate = true
+                }()
+                Image(nsImage: nsImage)
+            }
         }
         .menuBarExtraStyle(.window)
     }
