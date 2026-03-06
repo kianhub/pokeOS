@@ -1,14 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-# pokeOS Release Build Script
-# Builds, signs (ad-hoc), and packages pokeOS.app for distribution
+# deskpals Release Build Script
+# Builds, signs (ad-hoc), and packages deskpals.app for distribution
 
 VERSION="${1:-$(date +%Y%m%d)}"
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="$PROJECT_DIR/build"
-APP_NAME="pokeOS"
-SCHEME="pokeOS"
+APP_NAME="deskpals"
+SCHEME="deskpals"
 
 echo "==> Building $APP_NAME v$VERSION..."
 
