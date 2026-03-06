@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10000000000000000000001 /* pokeOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* pokeOSApp.swift */; };
+		A10000000000000000000001 /* deskpalsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* deskpalsApp.swift */; };
 		A10000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* AppDelegate.swift */; };
 		A10000000000000000000003 /* OverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* OverlayWindow.swift */; };
 		A10000000000000000000006 /* SpriteLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* SpriteLoader.swift */; };
@@ -22,7 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A20000000000000000000001 /* pokeOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pokeOSApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000001 /* deskpalsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deskpalsApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* OverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindow.swift; sourceTree = "<group>"; };
 		A20000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -35,7 +35,7 @@
 		A2000000000000000000000B /* AnimationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationEngine.swift; sourceTree = "<group>"; };
 		A2000000000000000000000C /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		A2000000000000000000000D /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
-		A20000000000000000000010 /* pokeOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pokeOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000000000000000000010 /* deskpals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = deskpals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,12 +52,12 @@
 		A40000000000000000000001 /* = Begin typing your first search query */ = {
 			isa = PBXGroup;
 			children = (
-				A40000000000000000000002 /* pokeOS */,
+				A40000000000000000000002 /* deskpals */,
 				A40000000000000000000007 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A40000000000000000000002 /* pokeOS */ = {
+		A40000000000000000000002 /* deskpals */ = {
 			isa = PBXGroup;
 			children = (
 				A40000000000000000000003 /* App */,
@@ -66,13 +66,13 @@
 				A40000000000000000000006 /* Services */,
 				A40000000000000000000008 /* Resources */,
 			);
-			path = pokeOS;
+			path = deskpals;
 			sourceTree = "<group>";
 		};
 		A40000000000000000000003 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				A20000000000000000000001 /* pokeOSApp.swift */,
+				A20000000000000000000001 /* deskpalsApp.swift */,
 				A20000000000000000000002 /* AppDelegate.swift */,
 			);
 			path = App;
@@ -110,7 +110,7 @@
 		A40000000000000000000007 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A20000000000000000000010 /* pokeOS.app */,
+				A20000000000000000000010 /* deskpals.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -128,9 +128,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A50000000000000000000001 /* pokeOS */ = {
+		A50000000000000000000001 /* deskpals */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A70000000000000000000003 /* Build configuration list for PBXNativeTarget "pokeOS" */;
+			buildConfigurationList = A70000000000000000000003 /* Build configuration list for PBXNativeTarget "deskpals" */;
 			buildPhases = (
 				A60000000000000000000001 /* Sources */,
 				A30000000000000000000001 /* Frameworks */,
@@ -140,9 +140,9 @@
 			);
 			dependencies = (
 			);
-			name = pokeOS;
-			productName = pokeOS;
-			productReference = A20000000000000000000010 /* pokeOS.app */;
+			name = deskpals;
+			productName = deskpals;
+			productReference = A20000000000000000000010 /* deskpals.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -160,7 +160,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A70000000000000000000001 /* Build configuration list for PBXProject "pokeOS" */;
+			buildConfigurationList = A70000000000000000000001 /* Build configuration list for PBXProject "deskpals" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -173,7 +173,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A50000000000000000000001 /* pokeOS */,
+				A50000000000000000000001 /* deskpals */,
 			);
 		};
 /* End PBXProject section */
@@ -195,7 +195,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10000000000000000000001 /* pokeOSApp.swift in Sources */,
+				A10000000000000000000001 /* deskpalsApp.swift in Sources */,
 				A10000000000000000000002 /* AppDelegate.swift in Sources */,
 				A10000000000000000000003 /* OverlayWindow.swift in Sources */,
 				A10000000000000000000006 /* SpriteLoader.swift in Sources */,
@@ -335,15 +335,15 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = pokeOS/Resources/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2025 pokeOS. All rights reserved.";
+				INFOPLIST_FILE = deskpals/Resources/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2025 deskpals. All rights reserved.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pokeos.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskpals.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -358,15 +358,15 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = pokeOS/Resources/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2025 pokeOS. All rights reserved.";
+				INFOPLIST_FILE = deskpals/Resources/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2025 deskpals. All rights reserved.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pokeos.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskpals.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -376,7 +376,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A70000000000000000000001 /* Build configuration list for PBXProject "pokeOS" */ = {
+		A70000000000000000000001 /* Build configuration list for PBXProject "deskpals" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A70000000000000000000011 /* Debug */,
@@ -385,7 +385,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A70000000000000000000003 /* Build configuration list for PBXNativeTarget "pokeOS" */ = {
+		A70000000000000000000003 /* Build configuration list for PBXNativeTarget "deskpals" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A70000000000000000000021 /* Debug */,
