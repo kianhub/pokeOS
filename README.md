@@ -1,13 +1,23 @@
+<div align='center'>
+
 # pokeOS
 
 ![pokeOS-showcase](https://github.com/user-attachments/assets/7f472b1e-4f7a-47ef-bda1-cb8f28378d3c)
 
+</div>
+
+<p align="center">
 
 A native macOS menu bar app that puts an animated Pokemon sprite on your desktop as a virtual pet. The sprite walks, idles, and bounces around a transparent overlay window that floats above all your other windows. Inspired by [vscode-pokemon](https://github.com/jakobhoeg/vscode-pokemon), but at the OS level — your Pokemon companion follows you everywhere, not just in your editor.
 
+</p>
+<div align="center">
+  
 ![macOS](https://img.shields.io/badge/macOS-13.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5-orange)
 ![Pokemon](https://img.shields.io/badge/Pokemon-565-red)
+
+</div>
 
 ---
 
@@ -233,8 +243,13 @@ All settings persist across launches via UserDefaults.
 
 All Pokemon sprites are sourced from [jakobhoeg/vscode-pokemon](https://github.com/jakobhoeg/vscode-pokemon). Each Pokemon has four animated GIF variants at 8fps: default idle, default walk, shiny idle, and shiny walk.
 
----
+This repository is inspired by [jakobhoeg/vscode-pokemon](https://github.com/jakobhoeg/vscode-pokemon).
 
-## License
+### Sprite Sources
+- Pokemon Sprites: © The Pokémon Company / Nintendo / Game Freak
+- The sprites are used for non-commercial, fan project purposes only
+- Original sprite artwork belongs to the respective copyright holders
 
-MIT
+### Acknowledgments
+- All sprites are property of their original creators
+- This repository is a fan project and is not affiliated with Nintendo, The Pokémon Company, or Game Freak
